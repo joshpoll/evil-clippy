@@ -272,7 +272,7 @@ with response_container:
     ):
         with st.spinner("Considering your question..."):
             # # first we generate a normal response using 3.5 turbo
-            normal_response = chat(
+            normal_response = chat35(
                 [
                     SystemMessage(
                         content=f"You are {st.session_state['name']}, a friendly neighborhood text assistant. Your job is to answer the user's question."
