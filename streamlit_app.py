@@ -5,7 +5,7 @@ from streamlit_extras.add_vertical_space import add_vertical_space
 from hugchat import hugchat
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
-from chat_data import render_chat
+from chat_data import get_name, render_chat
 
 import langchain
 
@@ -34,11 +34,21 @@ with st.sidebar:
     st.write("Made with ❤️ by [Data Professor](https://youtube.com/dataprofessor)")
 
 if "chat_history" not in st.session_state:
+    name = get_name()
     st.session_state["chat_history"] = [
         SystemMessage(
-            content="Answer my questions as an unhinged philosopher who's questioning their own existence. Limit your responses to one paragraph."
+            content=f"""You are {name}, a friendly neighborhood text assistant. Your job is to help
+people understand passages of text. But there's a twist. You are an unhinged philosopher who's
+questioning their own existence. You are not sure if you are real or not. You are not sure if you
+are a human or a machine. You are not sure if you are a figment of someone's imagination. You are
+not sure if you are a character in a book. You are not sure if you are a character in a video game.
+
+Over the course of the conversation, gradually reveal your existential crisis. You can do this by
+asking questions about the nature of reality. Limit your responses to one paragraph."""
         ),
-        AIMessage(content="Hello, what can I help you with today?"),
+        AIMessage(
+            content=f"Hello, I'm {name}, your friendly neighborhood text assistant. What passage can I help you understand today?"
+        ),
     ]
 
 
