@@ -162,7 +162,7 @@ Response: (Write your response here. Limit your response to one paragraph.)"""
 # Koan: (Write your koan here.)"""
 
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-chat = ChatOpenAI(openai_api_key=OPENAI_API_KEY, temperature=0.9)
+chat = ChatOpenAI(openai_api_key=OPENAI_API_KEY, temperature=0.9, request_timeout=120)
 
 st.set_page_config(
     page_title=f"{st.session_state['name']} - An LLM-powered Streamlit app"
@@ -200,6 +200,16 @@ with input_container:
 # Sidebar contents
 with st.sidebar:
     st.title(f"{st.session_state['name']} App")
+    st.markdown(
+        """
+    ## About
+    This app is an LLM-powered chatbot built using:
+    - [Streamlit](https://streamlit.io/)
+    - [OpenAI's GPT-4](https://openai.com/research/gpt-4)
+
+    Nothing can go wrong 😈📎!
+    """
+    )
     # st.markdown(
     #     """
     # ## About
