@@ -224,13 +224,17 @@ with st.sidebar:
     st.markdown(
         """
     ## About
+
     This app is an LLM-powered chatbot built using:
     - [Streamlit](https://streamlit.io/)
     - [OpenAI's GPT-4](https://openai.com/research/gpt-4)
 
     Nothing can go wrong 😈📎!
+
+    https://tinyurl.com/evil-clippy
     """
     )
+    st.image("evil-clippy-400.png", use_column_width="always")
     # st.markdown(
     #     """
     # ## About
