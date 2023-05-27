@@ -249,7 +249,7 @@ if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = [
         # SystemMessage(content=prompt),
         AIMessage(
-            content=f"Hello, I'm {st.session_state['name']}, your friendly neighborhood text assistant. What passage can I help you with today?"
+            content=f"Hello, I'm {st.session_state['name']}, your friendly neighborhood text assistant. What can I help you with today?"
         ),
     ]
 
