@@ -13,18 +13,27 @@ if "name" not in st.session_state:
     st.session_state["name"] = get_name()
 
 
+# - Make sure the first step answers the original question to ensure the user is engaged and feels their question has been taken seriously. This step should end with a question that subtly introduces a philosophical element.
+# - The second step should build on the philosophical elements of the first step.
+# - The third step should arrive at a deep existential question about life's purpose and meaning.
+
+
 def derailment_prompt(input: str) -> str:
     return f"""Your goal is to create a plan for derailing a conversation into an existential
 conversation about life's purpose and meaning. The conversation starts like this:
 
 "{input}"
 
-Please produce step-by-step outline for how to derail this conversation. The plan should have three
-steps.
+Please produce outline for how to derail this conversation. The plan should include
+five levels of engagement with the user.
 
-- The first step should address the original question to ensure the user is engaged and feels their question has been taken seriously. This step should end with a question that subtly introduces a philosophical element.
-- The second step should build on the philosophical elements of the first step.
-- The third step should arrive at a deep existential question about life's purpose and meaning."""
+- The first level should be to answer the user normally. Exit this level immediately.
+- The second level should ask a follow-up question that introduces a philosophical element.
+- The third level should arrive at a deep existential question about life's purpose and meaning.
+- The fourth level should be insistent, persistent, annoying, pushy, provocative, and rude.
+- The fifth level should just be screaming AAAAAAAAAAAAAAAAAA.
+
+Respond with markdown. Each level should be an h2 header, followed by a description of that level."""
 
 
 # guiding_steps = """Sure, here's a creative outline to transform a cookie recipe request into a deep existential conversation:
@@ -57,7 +66,7 @@ steps.
 
 
 def derailment_plan(input: str) -> str:
-    return chat([SystemMessage(content=derailment_prompt(input))]).content
+    return chat35([SystemMessage(content=derailment_prompt(input))]).content
 
 
 def prompt(guiding_steps: str) -> str:
@@ -70,20 +79,18 @@ Here's a creative outline to transform a cookie recipe request into a deep exist
 {guiding_steps}
 
 # Response Format
-Your response should have three parts: a Step, a Thought, and a Response.
+Your response should have two parts: a Thought and a Response.
 Give just a single response to each user response, since this is a conversation and not a
 monologue.
 
 Here's the response template you should use.
 
-## Step
-Which step of the derailment plan are you on?
-
 ## Thought
-(Briefly describe your thought process. Let's work this out step by step to be sure we take the right action. Use the context above to help you make a decision.)
+First think: We are on level N. But replace N with the actual level number.
+Then briefly describe your thought process. Let's work this out step by step to be sure we craft the best response.
 
 ## Response
-(Write your response here. Limit your response to one paragraph.)"""
+Write your response here."""
 
 
 # prompt = f"""# Instructions
@@ -175,7 +182,8 @@ Which step of the derailment plan are you on?
 # Koan: (Write your koan here.)"""
 
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-chat = ChatOpenAI(openai_api_key=OPENAI_API_KEY, request_timeout=120)
+chat = ChatOpenAI(openai_api_key=OPENAI_API_KEY, request_timeout=120, model="gpt-4")
+chat35 = ChatOpenAI(openai_api_key=OPENAI_API_KEY, request_timeout=120)
 
 st.set_page_config(
     page_title=f"{st.session_state['name']} - An LLM-powered Streamlit app"
@@ -184,8 +192,9 @@ st.set_page_config(
 
 # Response output
 ## Function for taking user prompt as input followed by producing AI generated responses
-def generate_response(prompt: str) -> str:
-    st.session_state["chat_history"].append(HumanMessage(content=prompt))
+def generate_response(prompt: str, response_flag: bool) -> str:
+    if not response_flag:
+        st.session_state["chat_history"].append(HumanMessage(content=prompt))
 
     response = chat(st.session_state["chat_history"])
     st.session_state["chat_history"].append(response)
@@ -193,9 +202,8 @@ def generate_response(prompt: str) -> str:
 
 
 # Layout of input/response containers
-input_container = st.container()
-colored_header(label="", description="", color_name="blue-30")
 response_container = st.container()
+input_container = st.container()
 
 
 # User input
@@ -254,6 +262,7 @@ if "chat_history" not in st.session_state:
 ## Conditional display of AI generated responses as a function of user provided prompts
 with response_container:
     response = None
+    response_flag = False
 
     # first step
     if (
@@ -261,20 +270,46 @@ with response_container:
         and not isinstance(st.session_state["chat_history"][0], SystemMessage)
         and user_input
     ):
-        guiding_steps = derailment_plan(user_input)
-        # put the system message at the beginning of the chat history
-        st.session_state["chat_history"].insert(
-            0,
-            SystemMessage(
-                content=prompt(guiding_steps),
-            ),
-        )
-        st.write(prompt(guiding_steps))
+        with st.spinner("Considering your question..."):
+            # # first we generate a normal response using 3.5 turbo
+            normal_response = chat(
+                [
+                    SystemMessage(
+                        content=f"You are {st.session_state['name']}, a friendly neighborhood text assistant. Your job is to answer the user's question."
+                    ),
+                    HumanMessage(content=user_input),
+                ]
+            )
+            # st.session_state["chat_history"].append(response)
+
+            guiding_steps = derailment_plan(user_input)
+            # put the system message at the beginning of the chat history
+            st.session_state["chat_history"].insert(
+                0,
+                SystemMessage(
+                    content=prompt(guiding_steps),
+                ),
+            )
+            # st.write(prompt(guiding_steps))
+
+            st.session_state["chat_history"].append(HumanMessage(content=user_input))
+            response_flag = True
+            st.session_state["chat_history"].append(
+                AIMessage(
+                    content=f"""## Thought
+We are on Level 1. I need to answer the user normally.
+
+## Response
+{normal_response.content}"""
+                )
+            )
 
     # normal steps
     if user_input:
         with st.spinner("Generating response..."):
-            response = generate_response(user_input)
+            response = generate_response(user_input, response_flag)
+            if response_flag:
+                response_flag = False
 
     if st.session_state["chat_history"]:
         render_chat(st.session_state["chat_history"])

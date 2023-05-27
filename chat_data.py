@@ -11,9 +11,11 @@ def parse_response(content: str) -> str:
     # the input content has Thought: and Response: sections. We should strip out the Thought:
     # section and return the Response: section. To do this, we'll split the string at the
     # "Response:"
-    # if "Response:" in content:
-    #     content = content.split("Response:")[1]
-    return content
+    if "Response:" in content:
+        content = content.split("Response:")[1]
+    elif "## Response" in content:
+        content = content.split("## Response")[1]
+    return content.strip()
 
 
 def render_chat(history: ChatHistory):
