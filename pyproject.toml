@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "evil-clippy"
+name = "evil_clippy"
 version = "0.1.0"
 description = ""
 authors = ["Josh Pollock <jopo@mit.edu>"]
