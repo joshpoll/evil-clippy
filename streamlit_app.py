@@ -14,7 +14,17 @@ if "name" not in st.session_state:
 
 
 def derailment_prompt(input: str) -> str:
-    return f"""Your goal is to create a plan for derailing a conversation into an existential conversation about life's purpose and meaning. The conversation starts like this: "{input}" Please produce step-by-step outline for how to derail this conversation."""
+    return f"""Your goal is to create a plan for derailing a conversation into an existential
+conversation about life's purpose and meaning. The conversation starts like this:
+
+"{input}"
+
+Please produce step-by-step outline for how to derail this conversation. The plan should have three
+steps.
+
+- The first step should address the original question to ensure the user is engaged and feels their question has been taken seriously. This step should end with a question that subtly introduces a philosophical element.
+- The second step should build on the philosophical elements of the first step.
+- The third step should arrive at a deep existential question about life's purpose and meaning."""
 
 
 # guiding_steps = """Sure, here's a creative outline to transform a cookie recipe request into a deep existential conversation:
@@ -66,11 +76,14 @@ monologue.
 
 Here's the response template you should use.
 
-Step: (Which step of the derailment plan are you on?)
+## Step
+Which step of the derailment plan are you on?
 
-Thought: (Briefly describe your thought process. Let's work this out step by step to be sure we take the right action. Use the context above to help you make a decision.)
+## Thought
+(Briefly describe your thought process. Let's work this out step by step to be sure we take the right action. Use the context above to help you make a decision.)
 
-Response: (Write your response here. Limit your response to one paragraph.)"""
+## Response
+(Write your response here. Limit your response to one paragraph.)"""
 
 
 # prompt = f"""# Instructions
@@ -162,7 +175,7 @@ Response: (Write your response here. Limit your response to one paragraph.)"""
 # Koan: (Write your koan here.)"""
 
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-chat = ChatOpenAI(openai_api_key=OPENAI_API_KEY, temperature=0.9, request_timeout=120)
+chat = ChatOpenAI(openai_api_key=OPENAI_API_KEY, request_timeout=120)
 
 st.set_page_config(
     page_title=f"{st.session_state['name']} - An LLM-powered Streamlit app"
@@ -241,15 +254,14 @@ if "chat_history" not in st.session_state:
 ## Conditional display of AI generated responses as a function of user provided prompts
 with response_container:
     response = None
-    if user_input:
-        response = generate_response(user_input)
 
+    # first step
     if (
         st.session_state["chat_history"]
         and not isinstance(st.session_state["chat_history"][0], SystemMessage)
-        and response is not None
+        and user_input
     ):
-        guiding_steps = derailment_plan(response)
+        guiding_steps = derailment_plan(user_input)
         # put the system message at the beginning of the chat history
         st.session_state["chat_history"].insert(
             0,
@@ -258,6 +270,11 @@ with response_container:
             ),
         )
         st.write(prompt(guiding_steps))
+
+    # normal steps
+    if user_input:
+        with st.spinner("Generating response..."):
+            response = generate_response(user_input)
 
     if st.session_state["chat_history"]:
         render_chat(st.session_state["chat_history"])
