@@ -9,6 +9,9 @@ packages = [{ include = "evil_clippy" }]
 [tool.poetry.dependencies]
 python = ">=3.9,<3.9.7 || >3.9.7,<4.0"
 streamlit = "^1.22.0"
+hugchat = "^0.0.6.2"
+streamlit-chat = "^0.0.2.2"
+streamlit-extras = "^0.2.7"
 
 
 [build-system]
