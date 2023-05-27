@@ -1,3 +1,11 @@
+# Dev Instructions
+
+```bash
+poetry install # installs dependencies
+poetry shell # runs .venv
+streamlit run streamlit_app.py # runs the server
+```
+
 # 📦 Streamlit App Starter Kit 
 ```
 ⬆️ (Replace above with your app's name)
