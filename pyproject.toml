@@ -11,6 +11,8 @@ streamlit = "^1.22.0"
 hugchat = "^0.0.6.2"
 streamlit-chat = "^0.0.2.2"
 streamlit-extras = "^0.2.7"
+langchain = "^0.0.181"
+openai = "^0.27.7"
 
 
 [build-system]

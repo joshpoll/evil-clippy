@@ -3,6 +3,16 @@ from streamlit_chat import message
 from streamlit_extras.colored_header import colored_header
 from streamlit_extras.add_vertical_space import add_vertical_space
 from hugchat import hugchat
+from langchain.chat_models import ChatOpenAI
+from langchain.schema import AIMessage, HumanMessage, SystemMessage
+from chat_data import render_chat
+
+import langchain
+
+langchain.verbose = False
+
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+chat = ChatOpenAI(openai_api_key=OPENAI_API_KEY)
 
 st.set_page_config(page_title="HugChat - An LLM-powered Streamlit app")
 
@@ -23,13 +33,14 @@ with st.sidebar:
     add_vertical_space(5)
     st.write("Made with ❤️ by [Data Professor](https://youtube.com/dataprofessor)")
 
-# Generate empty lists for generated and past.
-## generated stores AI generated responses
-if "generated" not in st.session_state:
-    st.session_state["generated"] = ["I'm HugChat, How may I help you?"]
-## past stores User's questions
-if "past" not in st.session_state:
-    st.session_state["past"] = ["Hi!"]
+if "chat_history" not in st.session_state:
+    st.session_state["chat_history"] = [
+        SystemMessage(
+            content="Answer my questions as an unhinged philosopher who's questioning their own existence. Limit your responses to one paragraph."
+        ),
+        AIMessage(content="Hello, what can I help you with today?"),
+    ]
+
 
 # Layout of input/response containers
 input_container = st.container()
@@ -39,7 +50,7 @@ response_container = st.container()
 
 # User input
 ## Function for taking user provided prompt as input
-def get_text():
+def get_text() -> str:
     input_text = st.text_input("You: ", "", key="input")
     return input_text
 
@@ -51,9 +62,11 @@ with input_container:
 
 # Response output
 ## Function for taking user prompt as input followed by producing AI generated responses
-def generate_response(prompt):
-    chatbot = hugchat.ChatBot(cookie_path="cookies.json")
-    response = chatbot.chat(prompt)
+def generate_response(prompt: str) -> str:
+    st.session_state["chat_history"].append(HumanMessage(content=prompt))
+
+    response = chat(st.session_state["chat_history"])
+    st.session_state["chat_history"].append(response)
     return response
 
 
@@ -61,10 +74,6 @@ def generate_response(prompt):
 with response_container:
     if user_input:
         response = generate_response(user_input)
-        st.session_state.past.append(user_input)
-        st.session_state.generated.append(response)
 
-    if st.session_state["generated"]:
-        for i in range(len(st.session_state["generated"])):
-            message(st.session_state["past"][i], is_user=True, key=str(i) + "_user")
-            message(st.session_state["generated"][i], key=str(i))
+    if st.session_state["chat_history"]:
+        render_chat(st.session_state["chat_history"])
