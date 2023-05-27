@@ -18,7 +18,7 @@ st.set_page_config(page_title="An LLM-powered chatbot with existential dread.")
 
 # Sidebar contents
 with st.sidebar:
-    st.title("🤗💬 (Evil) Clippy App")
+    st.title("🤗😈💬 (Evil) Clippy App")
     st.markdown(
         """
     ## About
