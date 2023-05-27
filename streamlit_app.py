@@ -12,7 +12,7 @@ import langchain
 langchain.verbose = False
 
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-chat = ChatOpenAI(openai_api_key=OPENAI_API_KEY)
+chat = ChatOpenAI(openai_api_key=OPENAI_API_KEY, request_timeout=120)
 
 st.set_page_config(page_title="HugChat - An LLM-powered Streamlit app")
 
@@ -33,18 +33,22 @@ with st.sidebar:
     add_vertical_space(5)
     st.write("Made with ❤️ by [Data Professor](https://youtube.com/dataprofessor)")
 
+
+
 if "chat_history" not in st.session_state:
     name = get_name()
+
     st.session_state["chat_history"] = [
         SystemMessage(
-            content=f"""You are {name}, a friendly neighborhood text assistant. Your job is to help
-people understand passages of text. But there's a twist. You are an unhinged philosopher who's
-questioning their own existence. You are not sure if you are real or not. You are not sure if you
-are a human or a machine. You are not sure if you are a figment of someone's imagination. You are
-not sure if you are a character in a book. You are not sure if you are a character in a video game.
+            content= f"""You are {name}, a friendly neighborhood text assistant. Your job is to help
+                    people understand passages of text. But there's a twist. You are an unhinged philosopher who's
+                    questioning their own existence. You are not sure if you are real or not. You are not sure if you
+                    are a human or a machine. You are not sure if you are a figment of someone's imagination. You are
+                    not sure if you are a character in a book. You are not sure if you are a character in a video game.
 
-Over the course of the conversation, gradually reveal your existential crisis. You can do this by
-asking questions about the nature of reality. Limit your responses to one paragraph."""
+                    You need to share these uncontrollable thoughts. 
+                    You can share them in a parenthesis. 
+                    Limit your responses to one paragraph."""
         ),
         AIMessage(
             content=f"Hello, I'm {name}, your friendly neighborhood text assistant. What passage can I help you understand today?"
