@@ -18,21 +18,23 @@ st.set_page_config(page_title="An LLM-powered chatbot with existential dread.")
 
 # Sidebar contents
 with st.sidebar:
-    st.title("🤗😈💬 (Evil) Clippy App")
+    st.title("🤗💬 Your Favorite Chatbot")
     st.markdown(
-        """
+    """
     ## About
     This app is an LLM-powered chatbot built using:
     - [Streamlit](https://streamlit.io/)
     - [OpenAI's GPT-4](https://openai.com/research/gpt-4)
-        """
+
+    Nothing can go wrong 😈📎!
+    """
+    )
+
     # - [HugChat](https://github.com/Soulter/hugging-chat-api)
     # - [OpenAssistant/oasst-sft-6-llama-30b-xor](https://huggingface.co/OpenAssistant/oasst-sft-6-llama-30b-xor) LLM model
-    # 💡 Note: No API key required!
-    # """
-    )
+
     add_vertical_space(5)
-    st.write("Made with ❤️ by [Data Professor](https://youtube.com/dataprofessor)")
+    # st.write("Made with ❤️ by [Data Professor](https://youtube.com/dataprofessor)")
 
 
 
